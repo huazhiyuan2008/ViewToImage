@@ -9,9 +9,23 @@
 
 ## 截图
 
-应用主页![应用主页](art/main.png)
+[应用主界面](art/main.png)
 
-保存的长截图![保存的截图](art/20160120_035750.jpg)
+<img alt='应用主界面' src='art/main.png' style="max-width: 150px;">
+
+
+[保存的长截图](art/20160120_035750s.jpg)
+
+<img alt='保存的长截图' src='art/20160120_035750.jpg' style="max-width: 150px;">
+ 
+## 内存截图
+在720x1280 320dp模拟器上测试内存占用图
+<img alt='保存的长截图' src='art/memory.png'>
+
+初始状态应用占用4M, 截图后应用占用20M, 3.5个屏幕大小截图大约16M，并不会导致OOM，并且截图后内存及时回收~，不会导致内存问题
+
+## Blog
+todo
 
 ## android机上图片down到本地
 adb pull /sdcard/123/20160120_035750.jpg art
