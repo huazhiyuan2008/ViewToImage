@@ -30,7 +30,13 @@
 ## Blog
 todo
 
-## android机上图片down到本地
+## Android机上图片down到本地
 adb pull /sdcard/123/20160120_035750.jpg art
 
+## Ref
+
+[android Bitmap（将视图转为bitmap对象）](http://www.cnblogs.com/crazywenza/p/3239799.html)
+[Android学习笔记进阶18之画图并保存图片到本地](http://blog.csdn.net/sjf0115/article/details/7269117)
+[http://stackoverflow.com/questions/12742343/android-get-screenshot-of-all-listview-items](http://stackoverflow.com/questions/12742343/android-get-screenshot-of-all-listview-items)
+[Android中View转换为Bitmap及getDrawingCache=null的解决方法](http://www.cnblogs.com/devinzhang/archive/2012/06/05/2536848.html)
 
