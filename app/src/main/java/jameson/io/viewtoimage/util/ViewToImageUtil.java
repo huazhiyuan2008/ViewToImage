@@ -3,6 +3,8 @@ package jameson.io.viewtoimage.util;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -38,7 +40,7 @@ public class ViewToImageUtil {
                 final String destPath = FileUtil.createImageFile(viewGroup.getContext()).getAbsolutePath();
                 LogUtils.d("destPath====" + destPath);
                 FileUtil.compressBitmapToFile(bitmap, destPath);
-                viewGroup.post(new Runnable() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         if (mOnImageSavedCallback != null) {
