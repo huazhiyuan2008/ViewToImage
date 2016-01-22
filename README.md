@@ -6,6 +6,7 @@
 ## Feature
 * 根据View生成Bitmap，保存图片
 * 支持ListView生成**超过一屏的长图**
+* 支持inflate出来的view生成Bitmap，保存图片
 
 ## 截图
 
