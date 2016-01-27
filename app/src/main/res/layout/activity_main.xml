@@ -17,12 +17,6 @@
         android:onClick="capture"
         android:text="capture"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="measure"
-        android:text="measure"/>
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
