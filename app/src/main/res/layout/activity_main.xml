@@ -17,6 +17,12 @@
         android:onClick="capture"
         android:text="capture"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="measure"
+        android:text="measure"/>
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -26,15 +32,18 @@
         android:id="@+id/capture_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#6f123456"
         android:minHeight="100dp"
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:gravity="center_vertical"
             android:text="Hello World!"
-            android:textColor="@android:color/white"
+            android:background="#3f123456"
+            android:padding="20dp"
+            android:textColor="@android:color/holo_red_dark"
             android:textSize="17sp"/>
 
         <ListView

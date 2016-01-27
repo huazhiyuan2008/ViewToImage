@@ -2,9 +2,13 @@ package jameson.io.viewtoimage.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.ColorInt;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -20,19 +24,27 @@ import java.util.List;
  */
 public class ViewToImageUtil {
 
+    public static int mBackgroundColor = Color.TRANSPARENT;
+
     /**
      * 生成图片，返回图片本地路径
      * 建议viewGroup渲染完成后调用
      */
     public static void generateImage(final ViewGroup viewGroup, final OnImageSavedCallback mOnImageSavedCallback) {
-        generateImage(viewGroup, 0, mOnImageSavedCallback);
+        generateImage(viewGroup, 0, Color.TRANSPARENT, mOnImageSavedCallback);
     }
 
     /**
      * 生成图片，返回图片本地路径, width为0则用viewGroup.getMeasuredWidth
      * 建议Inflate出来的视图设置width
+     *
+     * @param viewGroup
+     * @param width
+     * @param backgroundColor {@code AARRGGBB}如Color.RED, 0xFFFF0000
+     * @param mOnImageSavedCallback
      */
-    public static void generateImage(final ViewGroup viewGroup, final int width, final OnImageSavedCallback mOnImageSavedCallback) {
+    public static void generateImage(final ViewGroup viewGroup, final int width, @ColorInt final int backgroundColor, final OnImageSavedCallback mOnImageSavedCallback) {
+        mBackgroundColor = backgroundColor;
         final Bitmap bitmap = generateBigBitmap(viewGroup, width);
         new Thread(new Runnable() {
             @Override
@@ -81,7 +93,7 @@ public class ViewToImageUtil {
         LogUtils.d(String.format("width=%s, measuredWidth=%s, height=%s, measuredHeight=%s",
                 viewGroup.getWidth(), viewGroup.getMeasuredWidth(), viewGroup.getHeight(), viewGroup.getMeasuredHeight()));
         int height = 0;
-        List<BitmapWithHeight> list = getWholeViewToBitmap(viewGroup);
+        List<BitmapWithHeight> list = getWholeViewToBitmap(viewGroup, new ArrayList<BitmapWithHeight>());
         for (BitmapWithHeight item : list) {
             height += item.height;
         }
@@ -99,10 +111,9 @@ public class ViewToImageUtil {
     public static Bitmap generateBigBitmap(List<BitmapWithHeight> list, int width, int height) {
         final Bitmap bigBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         Canvas bigCanvas = new Canvas(bigBitmap);
-
+        bigCanvas.drawColor(mBackgroundColor);
         Paint paint = new Paint();
         int iHeight = 0;
-
         for (BitmapWithHeight item : list) {
             Bitmap bmp = item.bitmap;
             bigCanvas.drawBitmap(bmp, 0, iHeight, paint);
@@ -114,27 +125,56 @@ public class ViewToImageUtil {
     }
 
     /**
+     * view转换为 bitmap
+     *
+     * @param view
+     * @param width
+     * @return
+     */
+    public static BitmapWithHeight getWholeViewToBitmap(final View view, int width) {
+        return getSimpleViewToBitmap(view, width);
+    }
+
+    /**
      * viewGroup 转换为 bitmap集合
      *
      * @param viewGroup
      * @return
      */
-    public static List<BitmapWithHeight> getWholeViewToBitmap(final ViewGroup viewGroup) {
+    public static List<BitmapWithHeight> getWholeViewToBitmap(final ViewGroup viewGroup, List<BitmapWithHeight> list) {
         int width = viewGroup.getMeasuredWidth();
-        List<BitmapWithHeight> list = new ArrayList<>();
-        int count = viewGroup.getChildCount();
-        for (int i = 0; i < count; i++) {
-            View child = viewGroup.getChildAt(i);
-            if (child instanceof ListView) {
-                list.addAll(getWholeListViewItemsToBitmap((ListView) child));
-            } else if (child instanceof AbsListView) {
-                // TODO scrollView, GridView等
-            } else {
-                list.add(getSimpleViewToBitmap(child, width));
+        if (viewGroup instanceof ListView) {
+            list.addAll(getWholeListViewItemsToBitmap((ListView) viewGroup));
+        } else if (viewGroup instanceof RecyclerView) {
+//                RecyclerView recyclerView = (RecyclerView) child;
+//                list.addAll(getWholeRecyclerViewItemsToBitmap(recyclerView));
+            list.add(getWholeViewToBitmap(viewGroup, width));
+        } else if (viewGroup instanceof AbsListView) {
+            // TODO scrollView, GridView等
+            list.add(getWholeViewToBitmap(viewGroup, width));
+        } else {
+            int count = viewGroup.getChildCount();
+            for (int i = 0; i < count; i++) {
+                View child = viewGroup.getChildAt(i);
+                if (isScrollableView(child)) {
+                    getWholeViewToBitmap((ViewGroup) child, list);
+                } else {
+                    list.add(getWholeViewToBitmap(child, width));
+                }
             }
         }
 
         return list;
+    }
+
+    /**
+     * 是否是可滚动视图
+     *
+     * @param viewGroup
+     * @return
+     */
+    private static boolean isScrollableView(View viewGroup) {
+        return viewGroup instanceof ListView || viewGroup instanceof AbsListView;
     }
 
     /**
@@ -144,13 +184,47 @@ public class ViewToImageUtil {
      * @return Bitmap
      */
     public static BitmapWithHeight getSimpleViewToBitmap(final View view, int width) {
-        view.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        if (view.getWidth() <= 0 || view.getHeight() <= 0) {
+            view.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        }
 
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
         return new BitmapWithHeight(view.getDrawingCache(), view.getMeasuredHeight());
+    }
+
+    /**
+     * RecyclerView转换成bitmap
+     *
+     * @param recyclerView
+     * @return
+     */
+    public static List<BitmapWithHeight> getWholeRecyclerViewItemsToBitmap(final RecyclerView recyclerView) {
+        List<BitmapWithHeight> list = new ArrayList<>();
+        if (recyclerView == null || recyclerView.getAdapter() == null) {
+            return list;
+        }
+
+        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+            LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            if (manager.getOrientation() == LinearLayoutManager.VERTICAL) {
+                int count = manager.getItemCount();
+                LogUtils.w(count + "");
+                for (int i = 0; i < count; i++) {
+                    View childView = manager.findViewByPosition(i);
+                    // TODO: 1/25/16  childView不可见部分为null，无法截长图
+                    if (childView != null) {
+                        list.add(getSimpleViewToBitmap(childView, recyclerView.getMeasuredWidth()));
+                    }
+                }
+            } else {
+                list.add(getSimpleViewToBitmap(recyclerView, recyclerView.getMeasuredWidth()));
+            }
+        }
+
+        return list;
     }
 
     /**

@@ -1,12 +1,17 @@
 # ViewToImage
 
 ## Introduce
-本demo目标想做成网易云音乐歌词分享，动态生成文字+图片。
+本demo目标想做成网易云音乐歌词分享，动态生成文字+图片。支持已渲染的和未渲染(inflate)的视图，inflate出来的**不要**使用margin!!! 已渲染的view无此bug
 
 ## Feature
 * 根据View生成Bitmap，保存图片
 * 支持ListView生成**超过一屏的长图**
 * 支持inflate出来的view生成Bitmap，保存图片
+
+## Not support now
+* **不支持**RecyclerView, ScrollView, GridView
+* 不支持过复杂嵌套的ListView
+* inflate view中margin， padding信息可能会丢失
 
 ## 截图
 

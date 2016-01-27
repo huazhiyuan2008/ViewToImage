@@ -10,11 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import jameson.io.viewtoimage.util.FileUtil;
 import jameson.io.viewtoimage.util.LogUtils;
 import jameson.io.viewtoimage.util.ScreenUtil;
 import jameson.io.viewtoimage.util.ViewToImageUtil;
@@ -30,16 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LogUtils.d("screen===" + ScreenUtil.getScreenWidth(this) + ", " + ScreenUtil.getScreenHeight(this));
         initViews();
-        // 清空目录
-        File file = new File(FileUtil.getBasePath(this));
-        if (file.isDirectory()) {
-            for (File childFile : file.listFiles()) {
-                childFile.delete();
-            }
-        }
-
         captureInflateView();
     }
 
@@ -66,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void capture(View view) {
         int width = 0;//ScreenUtil.getScreenWidth(this);
-        ViewToImageUtil.generateImage(mCaptureView, width, new ViewToImageUtil.OnImageSavedCallback() {
+        ViewToImageUtil.generateImage(mCaptureView, width, 0xfff8f8f8, new ViewToImageUtil.OnImageSavedCallback() {
             @Override
             public void onFinishCallback(String path) {
                 Toast.makeText(MainActivity.this, path, Toast.LENGTH_SHORT).show();
@@ -101,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         int width = ScreenUtil.getScreenWidth(this);
-        ViewToImageUtil.generateImage(mCaptureView, width, new ViewToImageUtil.OnImageSavedCallback() {
+        ViewToImageUtil.generateImage(mCaptureView, width, 0xfff8f8f8, new ViewToImageUtil.OnImageSavedCallback() {
             @Override
             public void onFinishCallback(String path) {
                 Toast.makeText(MainActivity.this, path, Toast.LENGTH_SHORT).show();
@@ -110,4 +99,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void measure(View view) {
+
+    }
 }
