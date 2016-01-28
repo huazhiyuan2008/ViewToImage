@@ -11,7 +11,7 @@
 ## Not support now
 * **不支持**RecyclerView, ScrollView, GridView
 * 不支持过复杂嵌套的ListView
-* inflate view中margin， padding信息可能会丢失
+* inflate view中margin信息可能会丢失
 
 ## 截图
 

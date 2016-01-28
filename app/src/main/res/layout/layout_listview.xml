@@ -3,14 +3,16 @@
               xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#6f123456"
               android:orientation="vertical">
 
+    <!-- android:layout_height="50dp"         android:layout_marginLeft="16dp" -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
+        android:background="#6f123456"
         android:gravity="center_vertical"
+        android:padding="20dp"
         android:text="Hello World!"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="17sp"/>
